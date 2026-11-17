@@ -1,0 +1,1472 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hỗ trợ tra cứu khóm/ấp trên địa bàn tỉnh Bạc Liêu (cũ) năm 2026</title>
+<!-- Phiên bản 2.1 — Không dùng font/CDN/thư viện ngoài: toàn bộ file chạy offline, không cần internet -->
+<style>
+  :root{
+    --vtb-blue-deep:#003a61;
+    --vtb-blue-deep2:#00263f;
+    --vtb-blue:#005993;
+    --vtb-blue-light:#7ed3f7;
+    --vtb-red:#d71249;
+    --vtb-red-dark:#a90d39;
+    --bg:#f2f6f9;
+    --surface:#ffffff;
+    --surface-soft:#eef4f8;
+    --ink:#132943;
+    --ink-soft:#5b7488;
+    --line: rgba(0,89,147,0.14);
+  }
+  [data-theme="dark"]{
+    --bg:#071826;
+    --surface:#0e2436;
+    --surface-soft:#0b1f2f;
+    --ink:#eaf4fb;
+    --ink-soft:#9ab4c8;
+    --line: rgba(126,211,247,0.2);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'SVN-Gilroy','Helvetica Neue',Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    transition:background .2s ease, color .2s ease;
+  }
+  body.device-mobile-active{background:#d9e0e5;}
+  [data-theme="dark"] body.device-mobile-active{background:#03090f;}
+
+  #appFrame{width:100%; transition:all .25s ease;}
+  #appFrame.device-mobile{
+    max-width:430px; margin:26px auto; border:10px solid #15202b;
+    border-radius:42px; overflow:hidden; max-height:880px; overflow-y:auto;
+    box-shadow:0 30px 60px -18px rgba(0,0,0,.5);
+  }
+
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:10px 20px; background:var(--surface); border-bottom:1px solid var(--line);
+    position:sticky; top:0; z-index:50; gap:10px; flex-wrap:wrap;
+  }
+  .topbar-left{display:flex; align-items:center; gap:10px; min-width:0;}
+  .topbar-left img{width:36px; height:36px; border-radius:10px; object-fit:cover; box-shadow:0 2px 8px rgba(0,0,0,.3); flex-shrink:0;}
+  .topbar-left .brandname{font-weight:800; font-size:14px; color:var(--ink); letter-spacing:.01em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .topbar-right{display:flex; align-items:center; gap:8px; flex-shrink:0;}
+  .version-badge{display:flex; flex-direction:column; align-items:flex-end; line-height:1.2; font-size:11px; color:var(--ink-soft); margin-right:2px;}
+  .version-badge b{color:var(--vtb-red); font-size:12.5px; font-weight:800;}
+  .icon-btn{
+    width:34px; height:34px; border-radius:10px; border:1px solid var(--line);
+    background:var(--surface-soft); color:var(--ink); display:flex; align-items:center; justify-content:center;
+    cursor:pointer; transition:all .15s ease; flex-shrink:0;
+  }
+  .icon-btn:hover{border-color:var(--vtb-blue); color:var(--vtb-blue);}
+  .icon-btn svg{width:17px; height:17px;}
+
+  .bg-texture{
+    position:fixed; inset:0; z-index:-1;
+    background:
+      radial-gradient(1200px 500px at 15% -10%, rgba(215,18,73,0.08), transparent 60%),
+      radial-gradient(900px 500px at 110% 10%, rgba(0,89,147,0.12), transparent 60%),
+      var(--bg);
+  }
+
+  header.hero{
+    background: linear-gradient(135deg, var(--vtb-blue-deep) 0%, var(--vtb-blue-deep2) 100%);
+    color:#f2f8fc;
+    padding: 40px 24px 36px;
+    position:relative;
+    overflow:hidden;
+  }
+  header.hero::before{
+    content:""; position:absolute; right:-120px; top:-120px;
+    width:340px; height:340px; border-radius:50%;
+    border:1px solid rgba(126,211,247,0.22);
+  }
+  header.hero::after{
+    content:""; position:absolute; right:-40px; top:-40px;
+    width:220px; height:220px; border-radius:50%;
+    border:1px solid rgba(215,18,73,0.3);
+  }
+  .hero-inner{max-width:980px; margin:0 auto; position:relative; z-index:2;}
+  .app-brand{display:flex; align-items:center; gap:12px; margin-bottom:18px;}
+  .app-brand img{width:46px; height:46px; border-radius:12px; object-fit:cover; box-shadow:0 4px 14px rgba(0,0,0,.35); flex-shrink:0;}
+  .app-brand-text{display:flex; flex-direction:column; line-height:1.2;}
+  .app-brand-name{font-family:'SVN-Gilroy','Helvetica Neue',Arial,sans-serif; font-weight:800; font-size:19px; color:#fff; letter-spacing:.01em;}
+  .app-brand-tagline{font-size:11.5px; color:var(--vtb-blue-light); letter-spacing:.06em; text-transform:uppercase; font-weight:600;}
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--vtb-blue-light); font-weight:700;
+    border:1px solid rgba(126,211,247,0.35);
+    padding:5px 12px; border-radius:999px;
+    background:rgba(126,211,247,0.08);
+  }
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--vtb-red);}
+  h1.title{
+    font-family:'SVN-Gilroy','Helvetica Neue',Arial,sans-serif;
+    font-weight:800;
+    font-size:clamp(28px, 5vw, 44px);
+    line-height:1.08;
+    margin:16px 0 10px;
+    letter-spacing:-0.01em;
+  }
+  .subtitle{
+    color:rgba(242,248,252,0.75);
+    font-size:15px;
+    max-width:620px;
+    line-height:1.6;
+    margin:0 0 24px;
+  }
+  .stat-row{display:flex; flex-wrap:wrap; gap:10px; margin-bottom:8px;}
+  .stat-chip{
+    background:rgba(255,255,255,0.06);
+    border:1px solid rgba(255,255,255,0.14);
+    border-radius:12px;
+    padding:10px 16px;
+    min-width:112px;
+  }
+  .stat-chip .num{font-family:'SVN-Gilroy','Helvetica Neue',Arial,sans-serif; font-size:21px; font-weight:800; color:var(--vtb-blue-light); line-height:1;}
+  .stat-chip .lbl{font-size:11px; color:rgba(242,248,252,0.62); margin-top:4px; letter-spacing:.03em;}
+
+  .searchwrap{max-width:980px; margin:-24px auto 0; padding:0 24px; position:relative; z-index:5;}
+  .searchbox{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:16px;
+    box-shadow: 0 18px 40px -18px rgba(0,58,97,0.35);
+    padding:16px;
+  }
+  .searchbox input[type="text"]{
+    width:100%;
+    border:1.5px solid var(--line);
+    background:var(--surface-soft);
+    border-radius:11px;
+    padding:14px 16px 14px 44px;
+    font-size:16px;
+    font-family:inherit;
+    color:var(--ink);
+    outline:none;
+    transition:border-color .15s ease, box-shadow .15s ease;
+  }
+  .searchbox input[type="text"]:focus{
+    border-color:var(--vtb-blue);
+    box-shadow:0 0 0 3px rgba(0,89,147,0.16);
+  }
+  .search-icon-wrap{position:relative;}
+  .search-icon-wrap svg{position:absolute; left:14px; top:50%; transform:translateY(-50%); width:18px; height:18px; stroke:var(--ink-soft);}
+
+  .filters{display:flex; flex-wrap:wrap; gap:8px; margin-top:14px;}
+  .chip{
+    border:1px solid var(--line);
+    background:var(--surface);
+    color:var(--ink-soft);
+    font-size:13px; font-weight:700;
+    padding:7px 13px;
+    border-radius:999px;
+    cursor:pointer;
+    transition:all .15s ease;
+    font-family:inherit;
+  }
+  .chip:hover{border-color:var(--vtb-blue);}
+  .chip.active{background:var(--vtb-blue-deep); border-color:var(--vtb-blue-deep); color:var(--vtb-blue-light);}
+
+  main{max-width:980px; margin:0 auto; padding:26px 24px 70px;}
+
+  .count-line{font-size:13px; color:var(--ink-soft); margin:4px 2px 16px; display:flex; justify-content:space-between; align-items:center;}
+  .count-line b{color:var(--ink);}
+
+  .group{margin-bottom:28px;}
+  .group-head{display:flex; align-items:baseline; gap:10px; margin:0 0 12px; padding-bottom:8px; border-bottom:1px solid var(--line);}
+  .group-head h2{font-family:'SVN-Gilroy','Helvetica Neue',Arial,sans-serif; font-size:18px; font-weight:800; color:var(--vtb-blue-deep); margin:0;}
+  [data-theme="dark"] .group-head h2{color:var(--vtb-blue-light);}
+  .group-head .meta{font-size:12px; color:var(--ink-soft);}
+
+  .rows{display:flex; flex-direction:column; gap:8px;}
+  .row{
+    display:grid; grid-template-columns: 1fr 28px 1fr; align-items:center; gap:10px;
+    background:var(--surface); border:1px solid var(--line); border-radius:12px;
+    padding:13px 16px; transition:border-color .15s ease, transform .1s ease;
+  }
+  .row:hover{border-color:var(--vtb-red); transform:translateY(-1px);}
+  .old-name{font-size:14px; color:var(--ink-soft); font-weight:500; line-height:1.4;}
+  .old-name mark, .new-name mark{background:rgba(215,18,73,0.16); color:var(--vtb-blue-deep); padding:0 2px; border-radius:3px;}
+  [data-theme="dark"] .old-name mark, [data-theme="dark"] .new-name mark{background:rgba(215,18,73,0.35); color:var(--vtb-blue-light);}
+  .arrow{width:28px; height:28px; border-radius:50%; background:var(--vtb-red); color:#fff; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+  .arrow svg{width:14px; height:14px;}
+  .new-name{font-size:14.5px; font-weight:800; color:var(--vtb-blue-deep); line-height:1.4;}
+  [data-theme="dark"] .new-name{color:var(--vtb-blue-light);}
+  .new-name .note{display:block; font-size:11px; font-weight:500; color:var(--vtb-blue); margin-top:3px;}
+  [data-theme="dark"] .new-name .note{color:var(--ink-soft);}
+  .stat-line{display:block; font-size:11px; color:var(--ink-soft); font-weight:400; margin-top:3px;}
+
+  .empty{text-align:center; padding:56px 20px; color:var(--ink-soft);}
+  .empty svg{width:38px; height:38px; stroke:var(--ink-soft); opacity:.5; margin-bottom:10px;}
+
+  footer{text-align:center; padding:24px 24px 36px; color:var(--ink-soft); font-size:12px;}
+  footer .brand{color:var(--vtb-red); font-weight:800; font-family:'SVN-Gilroy','Helvetica Neue',Arial,sans-serif; letter-spacing:.02em;}
+
+  @media (max-width: 560px){
+    .row{grid-template-columns: 1fr 22px 1fr; padding:12px;}
+    .arrow{width:22px; height:22px;}
+    .arrow svg{width:11px; height:11px;}
+    .topbar-left .brandname{display:none;}
+  }
+
+  /* --- LocaMind quick-lookup chat widget --- */
+  .loca-chat{position:fixed; right:20px; bottom:20px; z-index:200; display:flex; flex-direction:column; align-items:flex-end; gap:12px;}
+  .loca-chat-btn{
+    width:58px; height:58px; border-radius:50%; border:none; cursor:pointer;
+    background:linear-gradient(135deg, var(--vtb-blue-deep), var(--vtb-red));
+    color:#fff; display:flex; align-items:center; justify-content:center;
+    box-shadow:0 10px 26px -8px rgba(0,0,0,.45);
+    transition:transform .15s ease;
+  }
+  .loca-chat-btn:hover{transform:scale(1.06);}
+  .loca-chat-btn svg{width:26px; height:26px;}
+  .loca-chat-btn .badge-dot{position:absolute; top:-2px; right:-2px; width:12px; height:12px; border-radius:50%; background:var(--vtb-red); border:2px solid var(--surface);}
+  .loca-chat-btn-wrap{position:relative;}
+
+  .loca-chat-panel{
+    display:none; flex-direction:column;
+    width:min(340px, 86vw); height:min(480px, 70vh);
+    background:var(--surface); border:1px solid var(--line); border-radius:18px;
+    box-shadow:0 24px 50px -16px rgba(0,0,0,.4); overflow:hidden;
+  }
+  .loca-chat-panel.open{display:flex;}
+  .loca-chat-header{
+    display:flex; align-items:center; gap:10px; padding:12px 14px;
+    background:linear-gradient(135deg, var(--vtb-blue-deep), var(--vtb-blue-deep2)); color:#fff; flex-shrink:0;
+  }
+  .loca-chat-header img{width:32px; height:32px; border-radius:9px; object-fit:cover; flex-shrink:0;}
+  .loca-chat-title{font-weight:800; font-size:13.5px; line-height:1.2;}
+  .loca-chat-sub{font-size:10.5px; color:rgba(255,255,255,.7);}
+  .loca-chat-close{margin-left:auto; background:none; border:none; color:rgba(255,255,255,.85); font-size:20px; line-height:1; cursor:pointer; padding:4px;}
+  .loca-chat-messages{flex:1; overflow-y:auto; padding:14px; display:flex; flex-direction:column; gap:10px; background:var(--surface-soft);}
+  .loca-msg{max-width:84%; font-size:13px; line-height:1.5; padding:9px 12px; border-radius:14px; white-space:pre-line;}
+  .loca-msg.bot{align-self:flex-start; background:var(--surface); color:var(--ink); border:1px solid var(--line); border-bottom-left-radius:4px;}
+  .loca-msg.user{align-self:flex-end; background:var(--vtb-blue-deep); color:#fff; border-bottom-right-radius:4px;}
+  .loca-msg b{color:var(--vtb-red);}
+  [data-theme="dark"] .loca-msg b{color:var(--vtb-blue-light);}
+  .loca-chat-input-row{display:flex; gap:8px; padding:10px; border-top:1px solid var(--line); background:var(--surface); flex-shrink:0;}
+  .loca-chat-input-row input{
+    flex:1; border:1.5px solid var(--line); background:var(--surface-soft); border-radius:10px;
+    padding:9px 12px; font-size:13px; font-family:inherit; color:var(--ink); outline:none;
+  }
+  .loca-chat-input-row input:focus{border-color:var(--vtb-blue);}
+  .loca-chat-send{
+    width:36px; height:36px; border-radius:10px; border:none; background:var(--vtb-red); color:#fff;
+    cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .loca-chat-send svg{width:16px; height:16px;}
+  .loca-chat-footer{text-align:center; font-size:10.5px; color:var(--ink-soft); padding:7px; border-top:1px solid var(--line); background:var(--surface); flex-shrink:0;}
+  .loca-chat-footer b{color:var(--vtb-red);}
+
+  @media (max-width: 560px){
+    .loca-chat{right:14px; bottom:14px;}
+    .loca-chat-panel{width:88vw;}
+  }
+
+  /* ================= Bổ sung phiên bản 2.1 ================= */
+  [hidden]{display:none !important;}
+
+  /* Ô tìm kiếm: nút xóa nhanh */
+  .searchbox input[type="text"]{padding-right:46px;}
+  .search-clear{
+    position:absolute; right:8px; top:50%; transform:translateY(-50%);
+    width:30px; height:30px; border-radius:8px; border:none; background:transparent;
+    color:var(--ink-soft); font-size:21px; line-height:1; cursor:pointer; display:none; font-family:inherit;
+  }
+  .search-clear.show{display:block;}
+  .search-clear:hover{background:var(--surface); color:var(--vtb-red);}
+
+  /* Thanh tiện ích */
+  .tools{display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; padding-top:12px; border-top:1px dashed var(--line);}
+  .tool-btn{
+    display:inline-flex; align-items:center; gap:6px; border:1px solid var(--line);
+    background:var(--surface-soft); color:var(--ink); font-family:inherit; font-size:12.5px; font-weight:700;
+    padding:7px 11px; border-radius:9px; cursor:pointer; transition:all .15s ease;
+  }
+  .tool-btn:hover{border-color:var(--vtb-blue); color:var(--vtb-blue);}
+  [data-theme="dark"] .tool-btn:hover{border-color:var(--vtb-blue-light); color:var(--vtb-blue-light);}
+  .tool-btn svg{width:14px; height:14px; flex-shrink:0;}
+
+  /* Thông báo dữ liệu nhập + gợi ý tìm kiếm */
+  .banner{
+    display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; margin:0 0 14px;
+    padding:10px 14px; border-radius:12px; font-size:12.5px; line-height:1.5;
+    background:rgba(255,176,32,.14); border:1px solid rgba(255,176,32,.5); color:var(--ink);
+  }
+  .banner button{
+    border:1px solid var(--vtb-red); background:transparent; color:var(--vtb-red); font-family:inherit;
+    font-size:12px; font-weight:800; padding:5px 10px; border-radius:8px; cursor:pointer;
+  }
+  [data-theme="dark"] .banner button{border-color:#ff8aa9; color:#ff8aa9;}
+  .hint{font-size:12.5px; color:var(--ink-soft); margin:-6px 2px 14px; line-height:1.5;}
+  .hint b{color:var(--ink);}
+
+  /* Dòng kết quả: thêm cột nút sao chép */
+  .row{grid-template-columns: 1fr 28px 1fr 32px;}
+  .copy-btn{
+    width:30px; height:30px; border-radius:8px; border:1px solid transparent; background:transparent;
+    color:var(--ink-soft); cursor:pointer; display:flex; align-items:center; justify-content:center; justify-self:end;
+  }
+  .copy-btn:hover{border-color:var(--line); background:var(--surface-soft); color:var(--vtb-blue);}
+  [data-theme="dark"] .copy-btn:hover{color:var(--vtb-blue-light);}
+  .copy-btn svg{width:15px; height:15px;}
+
+  /* Chuỗi giai đoạn (GĐ1 → GĐ2) */
+  .stage-tag{
+    display:inline-block; font-size:10px; font-weight:700; letter-spacing:.04em; color:var(--ink-soft);
+    border:1px solid var(--line); border-radius:999px; padding:1px 7px; margin-left:6px; vertical-align:middle;
+  }
+  .chain-now{
+    display:inline-flex; flex-wrap:wrap; align-items:baseline; gap:5px; margin-top:6px; padding:4px 10px;
+    border-radius:8px; background:rgba(215,18,73,.09); color:var(--vtb-red); font-size:13px; font-weight:800;
+  }
+  [data-theme="dark"] .chain-now{background:rgba(215,18,73,.24); color:#ff8aa9;}
+  .chain-now small{font-weight:600; font-size:11px; color:var(--ink-soft);}
+  .chain-warn{display:block; margin-top:5px; font-size:11px; font-weight:600; color:#a45f00; line-height:1.45;}
+  [data-theme="dark"] .chain-warn{color:#ffc56b;}
+  .origin{display:block; font-size:11px; color:var(--ink-soft); margin-top:4px; font-weight:400; line-height:1.45;}
+
+  /* Thông báo nổi */
+  .toast{
+    position:fixed; left:50%; bottom:26px; transform:translate(-50%,20px); z-index:300;
+    background:var(--vtb-blue-deep); color:#fff; font-size:13px; font-weight:600; line-height:1.45;
+    padding:10px 16px; border-radius:10px; box-shadow:0 12px 30px -10px rgba(0,0,0,.5);
+    opacity:0; pointer-events:none; transition:all .2s ease; max-width:88vw; text-align:center;
+  }
+  .toast.show{opacity:1; transform:translate(-50%,0);}
+
+  @media (max-width: 560px){
+    .row{grid-template-columns: 1fr 22px 1fr 28px; gap:8px;}
+    .copy-btn{width:28px; height:28px;}
+    .tool-btn{font-size:12px; padding:7px 9px;}
+  }
+
+  /* Bản in: chỉ còn tiêu đề + danh sách đang hiển thị */
+  @media print{
+    .topbar, .searchwrap, .loca-chat, .toast, .copy-btn, .bg-texture, .app-brand, .stat-row, .subtitle, .banner, .hint{display:none !important;}
+    *{transition:none !important;}
+    body{background:#fff !important; color:#000;}
+    .hero-inner{max-width:none; margin:0;}
+    #appFrame.device-mobile{max-width:none; max-height:none; overflow:visible; border:none; margin:0; box-shadow:none;}
+    header.hero{background:none; color:#000; padding:0 0 6px; overflow:visible;}
+    header.hero::before, header.hero::after{display:none;}
+    h1.title{font-size:17px; color:#000; margin:0 0 4px;}
+    main{padding:0; max-width:none;}
+    .count-line{color:#000; margin-bottom:8px;}
+    .group{margin-bottom:12px;}
+    .group-head{break-after:avoid;}
+    .group-head h2, .old-name, .new-name, .new-name .note, .stat-line, .origin{color:#000 !important;}
+    .rows{gap:3px;}
+    .row{grid-template-columns:1fr 18px 1fr; padding:5px 9px; border-color:#999; border-radius:5px; break-inside:avoid;}
+    .arrow{background:none; color:#000; width:18px; height:18px;}
+    .chain-now{background:none; color:#000; padding:0;}
+    .chain-now small, .chain-warn{color:#000;}
+    mark{background:none !important; color:#000 !important;}
+    footer{padding:10px 0 0; color:#000;}
+  }
+</style>
+</head>
+<body>
+<div class="bg-texture"></div>
+
+<div id="appFrame">
+  <nav class="topbar">
+    <div class="topbar-left">
+      <img class="js-logo" data-logo="hd" alt="Hải Đăng">
+      <span class="brandname">Truy vấn Ấp / Khóm</span>
+    </div>
+    <div class="topbar-right">
+      <span class="version-badge">Phiên bản <b>2.1</b><span>by Hải Đăng</span></span>
+      <button id="themeToggle" class="icon-btn" type="button" title="Chuyển giao diện sáng / tối" aria-label="Chuyển giao diện sáng / tối"></button>
+      <button id="deviceToggle" class="icon-btn" type="button" title="Xem dạng di động / máy tính" aria-label="Xem dạng di động / máy tính"></button>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="app-brand">
+        <img class="js-logo" data-logo="lm" alt="LocaMind">
+        <div class="app-brand-text">
+          <span class="app-brand-name">LocaMind</span>
+          <span class="app-brand-tagline">Smart Local Intelligence</span>
+        </div>
+      </div>
+      <h1 class="title">Hỗ trợ tra cứu khóm/ấp trên địa bàn tỉnh Bạc Liêu (cũ) năm 2026</h1>
+      <p class="subtitle">Gõ tên ấp/khóm cũ (hoặc tên mới) để tra cứu ngay đơn vị hành chính hiện tại sau sắp xếp — tổng hợp từ CÁC NGHỊ QUYẾT SÁP NHẬP ẤP / KHÓM NĂM 2026 trên địa bàn tỉnh Bạc Liêu (cũ)</p>
+      <div class="stat-row" id="statRow"></div>
+    </div>
+  </header>
+
+  <div class="searchwrap">
+    <div class="searchbox">
+      <div class="search-icon-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input type="text" id="searchInput" placeholder="VD: Khóm 1 Giá Rai, Ấp Bình Điền, Khóm 3 Phường 7…" autocomplete="off" aria-label="Từ khóa tra cứu">
+        <button id="searchClear" class="search-clear" type="button" title="Xóa từ khóa (Esc)" aria-label="Xóa từ khóa">×</button>
+      </div>
+      <div class="filters" id="filterRow"></div>
+      <div class="tools">
+        <button class="tool-btn" id="btnPrint" type="button" title="In danh sách đang hiển thị">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>In
+        </button>
+        <button class="tool-btn" id="btnExport" type="button" title="Xuất danh sách đang hiển thị ra file Excel (.xlsx)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>Xuất Excel
+        </button>
+        <button class="tool-btn" id="btnImport" type="button" title="Nhập dữ liệu từ file Excel (.xlsx) hoặc CSV để cập nhật danh sách">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>Nhập Excel
+        </button>
+        <button class="tool-btn" id="btnHtml" type="button" title="Tải về file HTML mới đã chứa dữ liệu đang dùng (để gửi cho người khác)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><polyline points="9 13 7 15 9 17"></polyline><polyline points="15 13 17 15 15 17"></polyline></svg>Tải bản HTML
+        </button>
+        <input type="file" id="fileInput" accept=".xlsx,.csv,.txt" hidden>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <div class="banner" id="dataBanner" hidden></div>
+    <div class="count-line"><span>Kết quả: <b id="resultCount" aria-live="polite">0</b> mục</span><span id="regionLine"></span></div>
+    <div class="hint" id="searchHint" hidden></div>
+    <div id="results"></div>
+  </main>
+
+  <footer>Design by <span class="brand">Hải Đăng</span>.</footer>
+</div>
+
+<div class="loca-chat">
+  <div class="loca-chat-panel" id="locaChatPanel">
+    <div class="loca-chat-header">
+      <img class="js-logo" data-logo="lm" alt="">
+      <div>
+        <div class="loca-chat-title">LocaMind</div>
+        <div class="loca-chat-sub">Trợ lý tra cứu nhanh</div>
+      </div>
+      <button class="loca-chat-close" id="locaChatClose" type="button" aria-label="Đóng">×</button>
+    </div>
+    <div class="loca-chat-messages" id="locaChatMessages" role="log" aria-live="polite"></div>
+    <form class="loca-chat-input-row" id="locaChatForm">
+      <input type="text" id="locaChatInput" placeholder="VD: ấp 3 Gành Hào giờ là gì?" autocomplete="off" aria-label="Câu hỏi tra cứu">
+      <button type="submit" class="loca-chat-send" aria-label="Gửi">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+      </button>
+    </form>
+    <div class="loca-chat-footer">Powered by <b>HaiDang</b></div>
+  </div>
+  <div class="loca-chat-btn-wrap">
+    <button class="loca-chat-btn" id="locaChatToggle" type="button" title="Trợ lý tra cứu nhanh" aria-label="Mở trợ lý tra cứu nhanh">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+    </button>
+    <span class="badge-dot" id="locaChatBadge"></span>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script id="appData">
+/* ===================== DỮ LIỆU =====================
+   Mỗi dòng là một bản ghi: region (xã/phường), old (tên cũ), new (tên mới), note (ghi chú), stat (số liệu).
+   Có thể sửa trực tiếp tại đây, hoặc dùng nút "Xuất Excel" → sửa → "Nhập Excel" → "Tải bản HTML" ngay trên giao diện.
+   Chuỗi nhiều giai đoạn: đặt tên region dạng "<Tên phường> – GĐ1 (...)" và "<Tên phường> – GĐ2 (...)",
+   phần mềm sẽ tự nối tên mới của GĐ1 với tên cũ của GĐ2. */
+const DATA = [
+  {region:'Xã Gành Hào', old:'1 phần Ấp 5, Ấp 4', new:'Ấp Ngọc Điền', stat:'1.394 hộ · 5.246 khẩu · 5,7051 km²'},
+  {region:'Xã Gành Hào', old:'Ấp 3, Ấp 2 (cũ)', new:'Ấp 2', stat:'1.564 hộ · 6.678 khẩu · 0,8165 km²'},
+  {region:'Xã Gành Hào', old:'Ấp 1 (giữ nguyên)', new:'Ấp 1', stat:'1.007 hộ · 4.696 khẩu · 0,3543 km²'},
+  {region:'Xã Gành Hào', old:'Ấp An Điền, Ấp Thuận Điền (cũ)', new:'Ấp Thuận Điền', stat:'806 hộ · 3.597 khẩu · 11,4304 km²'},
+  {region:'Xã Gành Hào', old:'Ấp Vĩnh Điền, Ấp Lập Điền (cũ), 1 phần Lam Điền', new:'Ấp Lập Điền', stat:'829 hộ · 3.900 khẩu · 18,0207 km²'},
+  {region:'Xã Gành Hào', old:'Ấp Canh Điền (cũ), 1 phần Lam Điền', new:'Ấp Canh Điền', stat:'564 hộ · 2.923 khẩu · 15,7040 km²'},
+  {region:'Xã Gành Hào', old:'P. còn lại Ấp 5, P. còn lại Thanh Hải', new:'Ấp Thanh Hải', stat:'562 hộ · 2.103 khẩu · 9,4579 km²'},
+  {region:'Xã Gành Hào', old:'Ấp Bình Điền (cũ), 1 phần Thanh Hải', new:'Ấp Bình Điền', stat:'623 hộ · 2.714 khẩu · 10,2478 km²'},
+  {region:'Xã Phong Thạnh – Cà Mau', old:'Ấp 1A (thuộc ấp Cây Gừa)', new:'Ấp Cây Gừa'},
+  {region:'Xã Phong Thạnh – Cà Mau', old:'Ấp 2A (thuộc ấp Tân Phong)', new:'Ấp Tân Phong'},
+  {region:'Xã Phong Thạnh – Cà Mau', old:'Ấp Khúc Tréo B', new:'Ấp Thạnh Bình'},
+  {region:'Xã Phong Thạnh – Cà Mau', old:'Ấp Khúc Tréo A', new:'Ấp Khúc Tréo'},
+  {region:'Xã Phong Thạnh – Cà Mau', old:'Ấp Gò Muồng, Ấp 9, Ấp 10', new:'Ấp Gò Muồng'},
+  {region:'Xã Phong Thạnh – Cà Mau', old:'Ấp 8, Ấp Kinh Lớn', new:'Ấp Tân Thạnh'},
+  {region:'Xã Phong Thạnh – Cà Mau', old:'Ấp 4, Ấp 6, Ấp 7', new:'Ấp Giồng Bớm'},
+  {region:'Xã Phong Thạnh – Cà Mau', old:'Ấp 2, Ấp 3, Ấp 5', new:'Ấp Phong Thạnh Tây'},
+  {region:'Xã Phong Thạnh – Cà Mau', old:'Ấp 1, Ấp 3A, Ấp 3B', new:'Ấp Cầu Đen'},
+  {region:'Xã Phong Thạnh – Cà Mau', old:'Ấp Nhân Dân A, Ấp Nhân Dân B', new:'Ấp Nhân Dân'},
+  {region:'Xã Phong Thạnh – Cà Mau', old:'Ấp 10A, Ấp 10B', new:'Ấp Cống Điền'},
+  {region:'Xã Phong Thạnh – Cà Mau', old:'Ấp Xóm Mới', new:'Ấp Xóm Mới'},
+  {region:'Phường Láng Tròn – Cà Mau', old:'Khóm 5, Khóm 14', new:'Khóm 5'},
+  {region:'Phường Láng Tròn – Cà Mau', old:'Khóm 7, Khóm 8', new:'Khóm 7'},
+  {region:'Phường Láng Tròn – Cà Mau', old:'Khóm 9, Khóm 10, Khóm 11', new:'Khóm 9'},
+  {region:'Phường Láng Tròn – Cà Mau', old:'Khóm 12, Khóm 13', new:'Khóm 13'},
+  {region:'Phường Láng Tròn – Cà Mau', old:'Khóm 15, Khóm 15A', new:'Khóm 15'},
+  {region:'Phường Láng Tròn – Cà Mau', old:'Khóm 18, Khóm 19', new:'Khóm 19'},
+  {region:'Phường Láng Tròn – Cà Mau', old:'Khóm 20, Khóm 21', new:'Khóm 21'},
+  {region:'Phường Láng Tròn – Cà Mau', old:'Khóm 12A, Khóm 13A', new:'Khóm Phong Thạnh Đông'},
+  {region:'Phường Láng Tròn – Cà Mau', old:'Khóm 16B, Khóm 17', new:'Khóm Phong Tân'},
+  {region:'Phường Láng Tròn – Cà Mau', old:'Khóm 1', new:'Khóm Xóm Lung', note:'Đổi tên'},
+  {region:'Phường Láng Tròn – Cà Mau', old:'Khóm 16A', new:'Khóm 16', note:'Đổi tên'},
+  {region:'Phường Giá Rai – Cà Mau', old:'Khóm 3, Khóm 5', new:'Khóm 5'},
+  {region:'Phường Giá Rai – Cà Mau', old:'Khóm 3A, Khóm Hộ Phòng', new:'Khóm Hộ Phòng'},
+  {region:'Phường Giá Rai – Cà Mau', old:'Khóm 7, Khóm Phong Thạnh A', new:'Khóm Phong Thạnh A'},
+  {region:'Phường Giá Rai – Cà Mau', old:'Khóm 6, Khóm 24', new:'Khóm 24'},
+  {region:'Phường Giá Rai – Cà Mau', old:'Khóm 24A, Khóm 25', new:'Khóm 25'},
+  {region:'Phường Giá Rai – Cà Mau', old:'Khóm 19A, Khóm 21', new:'Khóm 21'},
+  {region:'Phường Giá Rai – Cà Mau', old:'Khóm 20, Khóm Phong Thạnh', new:'Khóm Phong Thạnh'},
+  {region:'Phường Giá Rai – Cà Mau', old:'Khóm 1', new:'Khóm 1'},
+  {region:'Phường Giá Rai – Cà Mau', old:'Khóm 1A', new:'Khóm 1A'},
+  {region:'Phường Giá Rai – Cà Mau', old:'Khóm 2', new:'Khóm 2'},
+  {region:'Phường Giá Rai – Cà Mau', old:'Khóm 4', new:'Khóm 4'},
+  {region:'Phường Giá Rai – Cà Mau', old:'Khóm 4A', new:'Khóm 4A'},
+  {region:'Phường Giá Rai – Cà Mau', old:'Khóm 5A', new:'Khóm 5A'},
+  {region:'Phường Giá Rai – Cà Mau', old:'Khóm 18', new:'Khóm 18'},
+  {region:'Phường Giá Rai – Cà Mau', old:'Khóm 22', new:'Khóm 22'},
+  {region:'Phường Giá Rai – Cà Mau', old:'Khóm 23', new:'Khóm 23'},
+  {region:'Xã Đông Hải', old:'Ấp Mỹ Điền', new:'Ấp Mỹ Điền', note:'Trụ sở UBND xã'},
+  {region:'Xã Đông Hải', old:'Ấp Bửu I', new:'Ấp Bửu 1'},
+  {region:'Xã Đông Hải', old:'Ấp Bửu II', new:'Ấp Bửu 2', note:'Trụ sở Đảng ủy xã'},
+  {region:'Xã Đông Hải', old:'Ấp Bửu Đông', new:'Ấp Bửu Đông'},
+  {region:'Xã Đông Hải', old:'Cửa biển Cái Cùng', new:'Ấp Cái Cùng'},
+  {region:'Xã Đông Hải', old:'Ấp Châu Điền', new:'Ấp Châu Điền'},
+  {region:'Xã Đông Hải', old:'Ấp Hiệp Điền', new:'Ấp Hiệp Điền'},
+  {region:'Xã Đông Hải', old:'Ấp Minh Điền', new:'Ấp Minh Điền'},
+  {region:'Xã Đông Hải', old:'Ấp Trung Điền', new:'Ấp Trung Điền'},
+  {region:'Xã Đông Hải', old:'Ấp Trường Điền', new:'Ấp Trường Điền'},
+  {region:'Xã Đông Hải', old:'Ấp Vĩnh Điền', new:'Ấp Vĩnh Điền'},
+  {region:'Xã Đông Hải', old:'Các ấp nhỏ / trùng tên — nhóm 1 (sáp nhập)', new:'Ấp 1'},
+  {region:'Xã Đông Hải', old:'Các ấp nhỏ / trùng tên — nhóm 2 (sáp nhập)', new:'Ấp 2'},
+  {region:'Xã Đông Hải', old:'Các ấp nhỏ / trùng tên — nhóm 3 (sáp nhập)', new:'Ấp 3'},
+  {region:'Xã Đông Hải', old:'Các ấp còn lại (sáp nhập)', new:'Ấp 4, Ấp 5…'},
+  {region:'Phường Bạc Liêu', old:'Khóm 10 (Phường 1 cũ)', new:'Khóm 1'},
+  {region:'Phường Bạc Liêu', old:'Khóm 1 (Phường 1 cũ)', new:'Khóm 2'},
+  {region:'Phường Bạc Liêu', old:'Khóm 5 (Phường 1 cũ)', new:'Khóm 3'},
+  {region:'Phường Bạc Liêu', old:'Khóm 6 (Phường 1 cũ) + Khóm 7 (Phường 1 cũ)', new:'Khóm 4'},
+  {region:'Phường Bạc Liêu', old:'Khóm 8 (Phường 1 cũ) + Khóm 9 (Phường 1 cũ) + Khóm 10 (Phường 1 cũ)', new:'Khóm 5'},
+  {region:'Phường Bạc Liêu', old:'Khóm 3 (Phường 3 cũ) + Khóm 4 (Phường 3 cũ) + Khóm 17 (Khóm 6 Phường 7 cũ) + Khóm 18 (Khóm 5 Phường 7 cũ)', new:'Khóm 6'},
+  {region:'Phường Bạc Liêu', old:'Khóm 21 (Khóm 1 Phường 7 cũ)', new:'Khóm 7'},
+  {region:'Phường Bạc Liêu', old:'Khóm 20 (Khóm 2 Phường 7 cũ)', new:'Khóm 8'},
+  {region:'Phường Bạc Liêu', old:'Khóm 16 (Khóm 4 Phường 7 cũ) + Khóm 19 (Khóm 3 Phường 7 cũ)', new:'Khóm 9'},
+  {region:'Phường Bạc Liêu', old:'Khóm 11 (Khóm 1 Phường 3 cũ) + Khóm 12 (Khóm 5 Phường 3 cũ) + Khóm 13 (Khóm 6 Phường 3 cũ)', new:'Khóm 10'},
+  {region:'Phường Bạc Liêu', old:'Khóm 14 (Khóm 7 Phường 3 cũ) + Khóm 15 (Khóm 8 Phường 3 cũ)', new:'Khóm 11'},
+  {region:'Phường Bạc Liêu', old:'Khóm 22 (Khóm 1 Phường 8 cũ) + Khóm 23 (Khóm 2 Phường 8 cũ) + một phần Khóm Trà Khứa', new:'Khóm 12'},
+  {region:'Phường Bạc Liêu', old:'Khóm 24 (Khóm 3 Phường 8 cũ) + Khóm Cầu Sập + Khóm Trà Kha + một phần Khóm Trà Khứa', new:'Khóm 13'},
+  {region:'Phường Bạc Liêu', old:'Khóm 25 (Khóm 9 Phường 3 cũ) + Khóm Trà Kha B', new:'Khóm 14'},
+  {region:'Phường Bạc Liêu', old:'Khóm 26 (Khóm 5 Phường 2 cũ) — giữ nguyên', new:'Khóm 15'},
+  {region:'Phường Bạc Liêu', old:'Khóm 27 (Khóm 6 Phường 2 cũ) + một phần Khóm 28 (Khóm 3 Phường 2 cũ)', new:'Khóm 16'},
+  {region:'Phường Bạc Liêu', old:'một phần Khóm 28 (Khóm 3 Phường 2 cũ)', new:'Khóm 17'},
+  {region:'Phường Bạc Liêu', old:'Khóm 29 (Khóm 4 Phường 2 cũ) + Khóm 30 (Khóm 2 Phường 2 cũ) + Khóm 31 (Khóm 1 Phường 2 cũ)', new:'Khóm 18'},
+  {region:'Xã Long Điền', old:'Ấp Bờ Cảng', new:'Ấp Điền Hải'},
+  {region:'Xã Long Điền', old:'Ấp Cây Dương', new:'Ấp Cây Dương'},
+  {region:'Xã Long Điền', old:'Ấp Cây Dương A', new:'Ấp Cây Dương'},
+  {region:'Xã Long Điền', old:'Ấp Cây Giang', new:'Ấp Cây Giang'},
+  {region:'Xã Long Điền', old:'Ấp Cây Giang A', new:'Ấp Cây Giang'},
+  {region:'Xã Long Điền', old:'Ấp Công Điền', new:'Ấp Công Điền'},
+  {region:'Xã Long Điền', old:'Ấp Diêm Điền', new:'Ấp Diêm Điền'},
+  {region:'Xã Long Điền', old:'Ấp Doanh Điền', new:'Ấp Doanh Điền'},
+  {region:'Xã Long Điền', old:'Ấp Đại Điền', new:'Ấp Đầu Lá'},
+  {region:'Xã Long Điền', old:'Ấp Đầu Lá', new:'Ấp Đầu Lá'},
+  {region:'Xã Long Điền', old:'Ấp Gò Cát', new:'Ấp Điền Hải'},
+  {region:'Xã Long Điền', old:'Ấp Hòa I', new:'Ấp Hòa Thạnh'},
+  {region:'Xã Long Điền', old:'Ấp Hòa II', new:'Ấp Hòa Thạnh'},
+  {region:'Xã Long Điền', old:'Ấp Hòa Thạnh', new:'Ấp Hòa Thạnh'},
+  {region:'Xã Long Điền', old:'Ấp Huy Diễn', new:'Ấp Điền Hải'},
+  {region:'Xã Long Điền', old:'Ấp Long Hà', new:'Ấp Điền Hải'},
+  {region:'Xã Long Điền', old:'Ấp Rạch Rắn', new:'Ấp Rạch Rắn'},
+  {region:'Xã Long Điền', old:'Ấp Thạnh An', new:'Ấp Thạnh 1'},
+  {region:'Xã Long Điền', old:'Ấp Thạnh I', new:'Ấp Thạnh 1'},
+  {region:'Xã Long Điền', old:'Ấp Thạnh II', new:'Ấp Thạnh 2'},
+  {region:'Xã Long Điền', old:'Ấp Thạnh Trị', new:'Ấp Thạnh 2'},
+  {region:'Xã Hòa Bình – Cà Mau', old:'Béc Hen Lớn, Cây Điều, Béc Hen Nhỏ, Trà Khứa', new:'Ấp Béc Hen', note:'CSKV: Nguyễn Văn Kịch – 0947.026.775'},
+  {region:'Xã Hòa Bình – Cà Mau', old:'Tân Long, Tràm Một', new:'Ấp Tân Long', note:'CSKV: Nguyễn Hoàng Trọng Nguyễn – 0963.434.684'},
+  {region:'Xã Hòa Bình – Cà Mau', old:'Láng Giài, Láng Giài A', new:'Ấp Láng Giài', note:'CSKV: Huỳnh Thanh Tú – 0945.769.994'},
+  {region:'Xã Hòa Bình – Cà Mau', old:'Phước Thạnh 1, Cái Tràm A1, Hòa Linh', new:'Ấp Cái Tràm', note:'CSKV: Võ Việt An – 0917.333.244'},
+  {region:'Xã Hòa Bình – Cà Mau', old:'Châu Phú, Xóm Lớn A', new:'Ấp Xóm Lớn', note:'CSKV: Đỗ Anh Thắng – 0943.496.131'},
+  {region:'Xã Hòa Bình – Cà Mau', old:'Xóm Lớn B, Do Thới', new:'Ấp Do Thới', note:'CSKV: Phạm Vũ Linh – 0916.277.171'},
+  {region:'Xã Hòa Bình – Cà Mau', old:'15A, Tân Tiến', new:'Ấp Tân Tiến', note:'CSKV: Nguyễn Ngọc Khánh – 0949.317.678'},
+  {region:'Xã Hòa Bình – Cà Mau', old:'Cái Tràm A2, Phước Thạnh 2', new:'Ấp Phước Thạnh', note:'CSKV: Trần Thanh Tùng – 0944.060.604'},
+  {region:'Xã Hòa Bình – Cà Mau', old:'Huy Hết, Vĩnh Hiệp, Vĩnh Hội', new:'Ấp Vĩnh Hội'},
+  {region:'Xã Hòa Bình – Cà Mau', old:'Vĩnh Thành, Vĩnh Tân, Vĩnh Tiến', new:'Ấp Vĩnh Thành'},
+  {region:'Xã Hòa Bình – Cà Mau', old:'Thị Trấn A1', new:'Ấp Thị Trấn A1'},
+  {region:'Xã Hòa Bình – Cà Mau', old:'Thị Trấn A', new:'Ấp Thị Trấn A'},
+  {region:'Xã Hòa Bình – Cà Mau', old:'Cái Tràm B', new:'Ấp Cái Tràm B'},
+  {region:'Xã Hòa Bình – Cà Mau', old:'Chùa Phật', new:'Ấp Chùa Phật'},
+  {region:'Xã Hòa Bình – Cà Mau', old:'Thị Trấn B1, Thị Trấn B', new:'Ấp Thị Trấn B'},
+  {region:'Phường Hiệp Thành – Cà Mau', old:'Khóm Xóm Lẫm (cũ)', new:'Khóm Xóm Lẫm', note:'BT CB/Trưởng khóm: Huỳnh Bảo Trung 0946.707.133 · CTMT: Nguyễn Kim Xuyến 0843.828.775 · CAKV: Lê Minh Tuấn Khanh 0974.547.462'},
+  {region:'Phường Hiệp Thành – Cà Mau', old:'Khóm Kinh Tế (cũ)', new:'Khóm Kinh Tế', note:'BT CB/Trưởng khóm: Phan Hoàng Linh 0978.200.702 · CTMT: Thái Thị Cẩm Linh 0944.549.252 · CAKV: Nguyễn Trí Linh 0877.778.852'},
+  {region:'Phường Hiệp Thành – Cà Mau', old:'Khóm Nhà Mát (cũ)', new:'Khóm Nhà Mát', note:'BT CB/Trưởng khóm: Nguyễn Bảo Linh 0916.317.819 · CTMT: Huỳnh Thanh Hải 0949.265.797 · CAKV: Lê Minh Xuyên 0944.094.894'},
+  {region:'Phường Hiệp Thành – Cà Mau', old:'Khóm Giồng Giữa (cũ)', new:'Khóm Đầu Lộ', note:'BT CB/Trưởng khóm: Trần Viết Thống 0947.445.352 · CTMT: Lê Thanh Tú 0939.669.393 · CAKV: Lê Đồng Nay 0915.952.522'},
+  {region:'Phường Hiệp Thành – Cà Mau', old:'Khóm Giồng Nhãn A (cũ)', new:'Khóm Hiệp Thành', note:'BT CB/Trưởng khóm: Lê Chí Thanh 0948.202.054 · CTMT: Nguyễn Thanh Hải 0948.933.388 · CAKV: Trần Quốc Huy 0788.744.881'},
+  {region:'Phường Hiệp Thành – Cà Mau', old:'Khóm Giồng Giữa B (cũ)', new:'Khóm Giồng Giữa', note:'BT CB/Trưởng khóm: Thạch Sà Riêng 0918.777.497 · CTMT: Sơn Ngọc Thành 0902.707.303 · CAKV: Trương Quốc Thái 0949.428.403'},
+  {region:'Phường Hiệp Thành – Cà Mau', old:'Khóm Biển Tây A (cũ)', new:'Khóm Biển Tây', note:'BT CB/Trưởng khóm: Sơn Hoai 0939.955.662 · CTMT: Trần Diễn 0889.680.437 · CAKV: Dương Thanh Quang 0945.093.409'},
+  {region:'Phường Hiệp Thành – Cà Mau', old:'(chưa rõ khóm cũ cụ thể)', new:'Khóm Biển Đông A', note:'BT CB/Trưởng khóm: Kim Văn Bình 0938.065.480 · CTMT: Liêu Minh Thắng 0984.725.654 · CAKV: Trần Vũ Minh Nhân 0948.302.496'},
+  {region:'Phường Hiệp Thành – Cà Mau', old:'(chưa rõ khóm cũ cụ thể)', new:'Khóm Biển Đông B', note:'BT CB/Trưởng khóm: Bùi Hà Nhi 0987.942.180 · CTMT: Huỳnh Thanh Tâm 0339.496.513 · CAKV: Lê Trân 0913.331.351'},
+  {region:'Phường Hiệp Thành – Cà Mau', old:'(chưa rõ khóm cũ cụ thể)', new:'Khóm Biển Tây B', note:'BT CB/Trưởng khóm: Trương Thanh Phong 0967.955.915 · CTMT: Châu Hoàng Ân 0848.760.586 · CAKV: Dương Thanh Quang 0945.093.409'},
+  {region:'Phường Hiệp Thành – Cà Mau', old:'(chưa rõ khóm cũ cụ thể)', new:'Khóm Giồng Nhãn', note:'BT CB/Trưởng khóm: Lê Quốc Vương 0948.962.560 · CTMT: Trần Công Minh 0326.160.458 · CAKV: Trần Quốc Huy 0788.744.881'},
+  {region:'Xã Phước Long – Cà Mau', old:'toàn bộ Hành Chính, toàn bộ Phước Hòa A, một phần Long Hải, một phần Phước Thuận A', new:'Ấp Long Hải', note:'NQ 15/NQ-HĐND, 23/6/2026'},
+  {region:'Xã Phước Long – Cà Mau', old:'toàn bộ Long Hòa, một phần Long Hải', new:'Ấp Long Hòa', note:'NQ 15/NQ-HĐND, 23/6/2026'},
+  {region:'Xã Phước Long – Cà Mau', old:'toàn bộ Long Hậu, toàn bộ Phước Hòa Tiên, một phần Phước Thuận A', new:'Ấp Long Hậu', note:'NQ 15/NQ-HĐND, 23/6/2026'},
+  {region:'Xã Phước Long – Cà Mau', old:'giữ nguyên toàn bộ Long Thành', new:'Ấp Long Thành', note:'NQ 15/NQ-HĐND, 23/6/2026'},
+  {region:'Xã Phước Long – Cà Mau', old:'toàn bộ Nội Ô, một phần Long Đức', new:'Ấp Long Đức', note:'NQ 15/NQ-HĐND, 23/6/2026'},
+  {region:'Xã Phước Long – Cà Mau', old:'toàn bộ Phước Thuận 1, một phần Mỹ 2A', new:'Ấp Phước Thuận', note:'NQ 15/NQ-HĐND, 23/6/2026'},
+  {region:'Xã Phước Long – Cà Mau', old:'một phần Long Đức, một phần Phước 3A, một phần Tường 1, một phần Huê 3, một phần Mỹ 2A', new:'Ấp Phước Hậu', note:'NQ 15/NQ-HĐND, 23/6/2026'},
+  {region:'Xã Phước Long – Cà Mau', old:'một phần Phước 3A, một phần Mỹ Tân, một phần Vĩnh Phú B', new:'Ấp Vĩnh Phú', note:'NQ 15/NQ-HĐND, 23/6/2026'},
+  {region:'Xã Phước Long – Cà Mau', old:'một phần Huê 3, một phần Phước 3A, một phần Tường 1, một phần Phước 3B', new:'Ấp Phước Tường', note:'NQ 15/NQ-HĐND, 23/6/2026'},
+  {region:'Xã Phước Long – Cà Mau', old:'một phần Phước 3A, một phần Phước 3B', new:'Ấp Phước Thành', note:'NQ 15/NQ-HĐND, 23/6/2026'},
+  {region:'Xã Phước Long – Cà Mau', old:'toàn bộ Mỹ 1, toàn bộ Mỹ 2, một phần Mỹ 2A', new:'Ấp Phước Mỹ', note:'NQ 15/NQ-HĐND, 23/6/2026'},
+  {region:'Xã Phước Long – Cà Mau', old:'toàn bộ Vĩnh Phú A, toàn bộ Vĩnh Lộc, một phần Vĩnh Phú B, một phần Mỹ Tân', new:'Ấp Vĩnh Lộc', note:'NQ 15/NQ-HĐND, 23/6/2026'},
+];
+</script>
+
+<script>
+'use strict';
+const APP_VERSION = '2.1';
+
+/* ---------- Logo dùng chung (mỗi ảnh chỉ nhúng một lần) ---------- */
+const LOGOS = {
+  hd: 'data:image/jpeg;base64,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',
+  lm: 'data:image/jpeg;base64,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'
+};
+document.querySelectorAll('img.js-logo').forEach(function(im){ im.src = LOGOS[im.dataset.logo]; });
+
+/* ---------- Tiện ích chung ---------- */
+const $ = function(id){ return document.getElementById(id); };
+function esc(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'}[c];
+  });
+}
+function lsGet(k){ try{ return window.localStorage.getItem(k); }catch(e){ return null; } }
+function lsSet(k, v){ try{ window.localStorage.setItem(k, v); return true; }catch(e){ return false; } }
+function lsDel(k){ try{ window.localStorage.removeItem(k); }catch(e){} }
+function hashStr(s){
+  let h = 5381;
+  for(let i = 0; i < s.length; i++){ h = ((h << 5) + h + s.charCodeAt(i)) | 0; }
+  return (h >>> 0).toString(36);
+}
+let toastTimer = null;
+function toast(msg){
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 3200);
+}
+function downloadBlob(blob, name){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
+}
+function dateStamp(){
+  const d = new Date();
+  return d.getFullYear() + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0');
+}
+
+/* ---------- Chuẩn hóa & tách từ ---------- */
+const ROMAN = {i:'1', ii:'2', iii:'3'};   // "Ấp Hòa I" tìm được bằng "hoa 1"
+function norm(s){
+  return String(s == null ? '' : s).toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/đ/g, 'd');
+}
+function toks(s){
+  return norm(s).split(/[^a-z0-9]+/).filter(Boolean).map(function(t){ return ROMAN[t] || t; });
+}
+/* Từ có chữ số phải khớp nguyên từ ("1" không khớp "10", "1A"); từ chữ khớp theo tiền tố để gõ dở vẫn ra kết quả */
+function tokMatch(q, h){ return /\d/.test(q) ? h === q : h.indexOf(q) === 0; }
+
+/* ---------- Dữ liệu ---------- */
+const FIELDS = ['region', 'old', 'new', 'note', 'stat'];
+function cleanRow(d){
+  const o = {};
+  FIELDS.forEach(function(k){
+    const v = d[k] == null ? '' : String(d[k]).trim();
+    if(v) o[k] = v;
+  });
+  return o;
+}
+const EMBEDDED = DATA.map(cleanRow).filter(function(d){ return d.region && d.new; });
+const SIG = hashStr(JSON.stringify(EMBEDDED));
+const OVERRIDE_KEY = 'locamind.override';
+let override = null;       // dữ liệu nhập từ Excel (chỉ áp dụng cho đúng bản HTML này)
+let overrideSaved = true;
+(function(){
+  try{
+    const raw = lsGet(OVERRIDE_KEY);
+    if(!raw) return;
+    const o = JSON.parse(raw);
+    if(o && o.sig === SIG && Array.isArray(o.rows) && o.rows.length) override = o;
+  }catch(e){}
+})();
+
+let ITEMS = [];
+let REGIONS = [];
+let VOCAB = new Set();
+let activeRegion = null;   // null = tất cả
+let query = '';
+let lastShown = [];
+
+function stageOf(region){
+  const m = /^(.*?)\s*[–—-]\s*GĐ\s*(\d+)/i.exec(region || '');
+  return m ? {base: m[1].trim(), n: +m[2]} : null;
+}
+function baseOf(it){ return it.stage ? it.stage.base : it.d.region; }
+
+const RE_PARTIAL = /(một phần|1 phần|phần còn lại|p\.\s*còn lại)/i;
+const RE_WARD = /\(\s*(?:P\.|Phường)\s*(\d+)\s*cũ\s*\)/i;
+/* Tách "Khóm 3 + Khóm 4 (P.3 cũ) + Khóm 17" thành từng đơn vị; ghi chú "(P.3 cũ)" áp dụng cho cả các đơn vị đứng trước nó */
+function parseUnits(s){
+  const units = String(s || '').split(/\s*[+,;]\s*/).filter(Boolean).map(function(part){
+    const w = RE_WARD.exec(part);
+    const name = part.replace(/\([^)]*\)/g, ' ')
+      .replace(/giữ nguyên toàn bộ|toàn bộ|giữ nguyên|một phần|1 phần|phần còn lại|p\.\s*còn lại/gi, ' ')
+      .replace(/\s+/g, ' ').trim();
+    return {name: name, key: toks(name).join(' '), ward: w ? w[1] : null, partial: RE_PARTIAL.test(part)};
+  }).filter(function(u){ return u.key; });
+  let carry = null;
+  for(let i = units.length - 1; i >= 0; i--){
+    if(units[i].ward) carry = units[i].ward;
+    else if(carry) units[i].ward = carry;
+  }
+  return units;
+}
+
+/* Nối chuỗi giai đoạn: tên mới ở GĐ(n) ↔ tên cũ ở GĐ(n+1) của cùng một phường/xã */
+function buildChains(){
+  const groups = {};
+  ITEMS.forEach(function(it){
+    if(!it.stage) return;
+    const g = groups[it.stage.base] || (groups[it.stage.base] = {});
+    (g[it.stage.n] || (g[it.stage.n] = [])).push(it);
+  });
+  Object.keys(groups).forEach(function(base){
+    const g = groups[base];
+    const ns = Object.keys(g).map(Number).sort(function(a, b){ return a - b; });
+    for(let k = 0; k < ns.length - 1; k++){
+      const A = g[ns[k]], B = g[ns[k + 1]];
+      const byNew = {}, byOld = {};
+      A.forEach(function(a){
+        a.hasLater = true;
+        const kn = toks(a.d.new).join(' ');
+        (byNew[kn] || (byNew[kn] = [])).push(a);
+        parseUnits(a.d.old).forEach(function(u){
+          if(!u.ward) return;
+          const ko = u.key + '|' + u.ward;
+          (byOld[ko] || (byOld[ko] = [])).push(a);
+        });
+      });
+      B.forEach(function(b){
+        parseUnits(b.d.old).forEach(function(u){
+          const viaNew = !u.ward;
+          const hits = viaNew ? (byNew[u.key] || []) : (byOld[u.key + '|' + u.ward] || []);
+          hits.forEach(function(a){
+            if(!a.next.some(function(x){ return x.it === b; })) a.next.push({it: b, partial: u.partial});
+            if(!b.prev.some(function(x){ return x.it === a; })) b.prev.push({it: a, viaNew: viaNew});
+          });
+        });
+      });
+    }
+  });
+}
+/* Các đơn vị ở giai đoạn cuối cùng mà một bản ghi dẫn tới */
+function finals(it){
+  const out = [];
+  (function walk(x, partial, depth){
+    if(!x.next.length || depth > 6){
+      if(x !== it && !out.some(function(o){ return o.it === x; })) out.push({it: x, partial: partial});
+      return;
+    }
+    x.next.forEach(function(n){ walk(n.it, partial || n.partial, depth + 1); });
+  })(it, false, 0);
+  return out;
+}
+function hasConflict(it){
+  return it.next.filter(function(n){ return !n.partial; }).length > 1;
+}
+function currentText(it){
+  if(!it.hasLater) return '';
+  return finals(it).map(function(f){ return f.it.d.new + (f.partial ? ' (một phần)' : ''); }).join(', ');
+}
+
+function setData(rows){
+  ITEMS = rows.map(function(d, i){
+    return {d: d, i: i, old: toks(d.old), nw: toks(d.new), region: toks(d.region), note: toks(d.note),
+            stage: stageOf(d.region), next: [], prev: [], hasLater: false};
+  });
+  REGIONS = Array.from(new Set(rows.map(function(d){ return d.region; })));
+  VOCAB = new Set();
+  ITEMS.forEach(function(it){
+    [it.old, it.nw, it.region, it.note].forEach(function(a){ a.forEach(function(t){ VOCAB.add(t); }); });
+  });
+  buildChains();
+  if(activeRegion !== null && REGIONS.indexOf(activeRegion) < 0) activeRegion = null;
+}
+
+/* ---------- Tìm kiếm ---------- */
+const FKEYS = ['old', 'nw', 'region', 'note'];
+const POP = [0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4];
+/* Trả về số trường tối thiểu cần dùng để khớp hết các từ (0 = không khớp).
+   Số đi sau một từ chữ ("khóm 1") phải đứng liền nhau trong dữ liệu → "Khóm 5 (Phường 1 cũ)" không bị dính. */
+function fieldsNeeded(it, q){
+  const need = [];
+  for(let i = 0; i < q.length; i++){
+    const pair = i > 0 && /\d/.test(q[i]) && !/\d/.test(q[i - 1]);
+    let m = 0;
+    for(let b = 0; b < FKEYS.length; b++){
+      const f = it[FKEYS[b]];
+      if(pair){
+        for(let p = 0; p + 1 < f.length; p++){
+          if(f[p + 1] === q[i] && tokMatch(q[i - 1], f[p])){ m |= 1 << b; break; }
+        }
+      }else{
+        for(let p = 0; p < f.length; p++){
+          if(tokMatch(q[i], f[p])){ m |= 1 << b; break; }
+        }
+      }
+    }
+    if(!m) return 0;
+    need.push(m);
+  }
+  let best = 9;
+  for(let S = 1; S < 16; S++){
+    if(POP[S] < best && need.every(function(m){ return m & S; })) best = POP[S];
+  }
+  return best;
+}
+function runSearch(q, pool){
+  let best = 9;
+  const scored = [];
+  pool.forEach(function(it){
+    const n = fieldsNeeded(it, q);
+    if(!n) return;
+    scored.push([it, n]);
+    if(n < best) best = n;
+  });
+  return scored.filter(function(s){ return s[1] === best; }).map(function(s){ return s[0]; });
+}
+/* Các từ đệm thường gặp trong câu hỏi tự nhiên — chỉ bỏ khi tìm đủ từ không ra kết quả */
+const STOP = new Set(['la','gi','gio','nay','bay','hien','thuoc','ten','moi','cu','nao','o','dau','da','thi','vay',
+  've','sap','nhap','vao','cua','tra','cuu','tim','cho','hoi','toi','minh','sau','truoc','khi','doi','duoc','khong','a','nhe']);
+function smartSearch(text, pool){
+  const pairs = [];
+  String(text || '').split(/[^\p{L}\p{M}\p{N}]+/u).forEach(function(w){
+    toks(w).forEach(function(t){ pairs.push({w: w, t: t}); });
+  });
+  if(!pairs.length) return {items: pool, q: [], dropped: []};
+  const all = pairs.map(function(p){ return p.t; });
+  let items = runSearch(all, pool);
+  if(items.length) return {items: items, q: all, dropped: []};
+  const attempts = [
+    pairs.filter(function(p){ return VOCAB.has(p.t); }),
+    pairs.filter(function(p){ return VOCAB.has(p.t) && !STOP.has(p.t); }),
+    pairs.filter(function(p){ return !STOP.has(p.t); })
+  ];
+  for(let k = 0; k < attempts.length; k++){
+    const kept = attempts[k];
+    if(kept.length === pairs.length) continue;
+    const q = kept.map(function(p){ return p.t; });
+    /* chỉ nới lỏng khi còn lại ít nhất 2 từ có nghĩa — tránh trả về cả danh sách cho chuỗi gõ bừa */
+    if(q.filter(function(t){ return /^[a-z]{2,}$/.test(t); }).length < 2) continue;
+    items = runSearch(q, pool);
+    if(items.length){
+      const dropped = [];
+      pairs.forEach(function(p){ if(kept.indexOf(p) < 0 && dropped.indexOf(p.w) < 0) dropped.push(p.w); });
+      return {items: items, q: q, dropped: dropped};
+    }
+  }
+  return {items: [], q: all, dropped: []};
+}
+function hl(text, q){
+  text = String(text == null ? '' : text);
+  if(!q || !q.length) return esc(text);
+  return text.split(/([\p{L}\p{M}\p{N}]+)/u).map(function(p, i){
+    if(i % 2 === 0) return esc(p);
+    const t = toks(p);
+    const hit = t.length && t.some(function(x){ return q.some(function(k){ return tokMatch(k, x); }); });
+    return hit ? '<mark>' + esc(p) + '</mark>' : esc(p);
+  }).join('');
+}
+
+/* ---------- Hiển thị ---------- */
+function renderStats(){
+  const bases = new Set(ITEMS.map(baseOf));
+  const current = new Set();
+  ITEMS.forEach(function(it){ if(!it.hasLater) current.add(baseOf(it) + '|' + norm(it.d.new)); });
+  const stats = [
+    {num: bases.size, lbl: 'Xã / Phường'},
+    {num: ITEMS.length, lbl: 'Dòng dữ liệu'},
+    {num: current.size, lbl: 'Ấp / khóm hiện hành'}
+  ];
+  $('statRow').innerHTML = stats.map(function(s){
+    return '<div class="stat-chip"><div class="num">' + s.num + '</div><div class="lbl">' + esc(s.lbl) + '</div></div>';
+  }).join('');
+}
+function renderFilters(){
+  let html = '<button class="chip ' + (activeRegion === null ? 'active' : '') + '" type="button" data-i="-1">Tất cả</button>';
+  REGIONS.forEach(function(r, i){
+    html += '<button class="chip ' + (r === activeRegion ? 'active' : '') + '" type="button" data-i="' + i + '">' + esc(r) + '</button>';
+  });
+  $('filterRow').innerHTML = html;
+}
+function arrowIcon(){
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>';
+}
+function copyIcon(){
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
+}
+function rowHtml(it, q){
+  const d = it.d;
+  let left = hl(d.old || '—', q);
+  const origins = it.prev.filter(function(p){ return p.viaNew && norm(p.it.d.old) !== norm(p.it.d.new); });
+  if(origins.length){
+    left += '<span class="origin">Gốc: ' + origins.map(function(p){
+      return esc(p.it.d.new) + ' ← ' + esc(p.it.d.old);
+    }).join('; ') + '</span>';
+  }
+  let right = hl(d.new, q);
+  if(it.stage) right += '<span class="stage-tag">GĐ' + it.stage.n + '</span>';
+  if(it.hasLater){
+    const fin = finals(it);
+    if(fin.length){
+      right += '<br><span class="chain-now"><small>Hiện nay (GĐ' + fin[0].it.stage.n + '):</small> ' + fin.map(function(f){
+        return esc(f.it.d.new) + (f.partial ? ' <small>(một phần)</small>' : '');
+      }).join(' · ') + '</span>';
+      if(hasConflict(it)) right += '<span class="chain-warn">⚠ Dữ liệu đang cho ra nhiều kết quả — cần đối chiếu nghị quyết.</span>';
+    }else{
+      right += '<span class="chain-warn">⚠ Chưa có dữ liệu giai đoạn sau cho đơn vị này — cần đối chiếu nghị quyết.</span>';
+    }
+  }
+  if(d.note) right += '<span class="note">' + hl(d.note, q) + '</span>';
+  if(d.stat) right += '<span class="stat-line">' + esc(d.stat) + '</span>';
+  return '<div class="row">' +
+    '<div class="old-name">' + left + '</div>' +
+    '<div class="arrow">' + arrowIcon() + '</div>' +
+    '<div class="new-name">' + right + '</div>' +
+    '<button class="copy-btn" type="button" data-i="' + it.i + '" title="Sao chép dòng này" aria-label="Sao chép dòng này">' + copyIcon() + '</button>' +
+  '</div>';
+}
+function renderResults(){
+  const pool = activeRegion === null ? ITEMS : ITEMS.filter(function(it){ return it.d.region === activeRegion; });
+  const res = smartSearch(query, pool);
+  lastShown = res.items;
+
+  $('resultCount').textContent = res.items.length;
+  $('regionLine').textContent = activeRegion === null ? '' : activeRegion;
+  $('searchClear').classList.toggle('show', !!query);
+
+  const hint = $('searchHint');
+  if(res.dropped.length){
+    hint.hidden = false;
+    hint.innerHTML = 'Không có dòng nào khớp đủ mọi từ — đang hiển thị kết quả gần nhất, đã bỏ qua: ' +
+      res.dropped.map(function(w){ return '<b>' + esc(w) + '</b>'; }).join(', ') + '.';
+  }else{
+    hint.hidden = true;
+  }
+
+  const container = $('results');
+  if(!res.items.length){
+    container.innerHTML = '<div class="empty">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>' +
+      '<div>Không tìm thấy tên ấp/khóm phù hợp. Thử một từ khóa khác' + (activeRegion === null ? '' : ' hoặc chọn “Tất cả”') + '.</div></div>';
+    return;
+  }
+  const byRegion = {};
+  res.items.forEach(function(it){ (byRegion[it.d.region] || (byRegion[it.d.region] = [])).push(it); });
+  let html = '';
+  REGIONS.forEach(function(region){
+    const list = byRegion[region];
+    if(!list) return;
+    html += '<div class="group"><div class="group-head"><h2>' + esc(region) + '</h2><span class="meta">' + list.length + ' mục</span></div><div class="rows">';
+    list.forEach(function(it){ html += rowHtml(it, res.q); });
+    html += '</div></div>';
+  });
+  container.innerHTML = html;
+}
+function renderBanner(){
+  const b = $('dataBanner');
+  if(!override){ b.hidden = true; b.innerHTML = ''; return; }
+  b.hidden = false;
+  b.innerHTML = '<span>Đang dùng dữ liệu nhập từ <b>' + esc(override.name || 'file') + '</b> (' + override.rows.length + ' dòng, ' +
+    esc(new Date(override.at).toLocaleString('vi-VN')) + ')' +
+    (overrideSaved ? ' — lưu trên trình duyệt của máy này.' : ' — trình duyệt không cho lưu, dữ liệu sẽ mất khi đóng trang.') +
+    ' Bấm “Tải bản HTML” để có file mới gửi cho người khác.</span>' +
+    '<button type="button" id="btnRestore">Khôi phục dữ liệu gốc</button>';
+}
+function renderAll(){
+  renderStats();
+  renderFilters();
+  renderBanner();
+  renderResults();
+}
+
+/* ---------- Sao chép ---------- */
+function lineText(it){
+  const d = it.d;
+  let s = (d.old ? d.old + ' → ' : '') + d.new + ' (' + d.region + ')';
+  const cur = currentText(it);
+  if(cur) s += ' → hiện nay: ' + cur;
+  if(d.note) s += ' | ' + d.note;
+  return s;
+}
+function copyText(text){
+  function fallback(){
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    let ok = false;
+    try{ ok = document.execCommand('copy'); }catch(e){}
+    ta.remove();
+    toast(ok ? 'Đã sao chép: ' + text : 'Trình duyệt không cho sao chép tự động.');
+  }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(function(){ toast('Đã sao chép: ' + text); }, fallback);
+  }else{
+    fallback();
+  }
+}
+
+/* ---------- Xuất Excel (.xlsx) — tự đóng gói, không cần thư viện ---------- */
+const CRC_T = (function(){
+  const t = new Uint32Array(256);
+  for(let n = 0; n < 256; n++){
+    let c = n;
+    for(let k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+    t[n] = c >>> 0;
+  }
+  return t;
+})();
+function crc32(u8){
+  let c = 0xFFFFFFFF;
+  for(let i = 0; i < u8.length; i++) c = CRC_T[(c ^ u8[i]) & 255] ^ (c >>> 8);
+  return (c ^ 0xFFFFFFFF) >>> 0;
+}
+function zipStore(files){
+  const enc = new TextEncoder();
+  const parts = [], central = [];
+  let off = 0, cdSize = 0;
+  const now = new Date();
+  const dt = ((now.getFullYear() - 1980) << 9) | ((now.getMonth() + 1) << 5) | now.getDate();
+  const tm = (now.getHours() << 11) | (now.getMinutes() << 5) | (now.getSeconds() >> 1);
+  files.forEach(function(f){
+    const nm = enc.encode(f.name);
+    const data = enc.encode(f.text);
+    const crc = crc32(data);
+    const lh = new DataView(new ArrayBuffer(30));
+    lh.setUint32(0, 0x04034b50, true); lh.setUint16(4, 20, true); lh.setUint16(6, 0x0800, true);
+    lh.setUint16(8, 0, true); lh.setUint16(10, tm, true); lh.setUint16(12, dt, true);
+    lh.setUint32(14, crc, true); lh.setUint32(18, data.length, true); lh.setUint32(22, data.length, true);
+    lh.setUint16(26, nm.length, true); lh.setUint16(28, 0, true);
+    parts.push(new Uint8Array(lh.buffer), nm, data);
+    const ch = new DataView(new ArrayBuffer(46));
+    ch.setUint32(0, 0x02014b50, true); ch.setUint16(4, 20, true); ch.setUint16(6, 20, true);
+    ch.setUint16(8, 0x0800, true); ch.setUint16(10, 0, true); ch.setUint16(12, tm, true); ch.setUint16(14, dt, true);
+    ch.setUint32(16, crc, true); ch.setUint32(20, data.length, true); ch.setUint32(24, data.length, true);
+    ch.setUint16(28, nm.length, true); ch.setUint32(42, off, true);
+    central.push(new Uint8Array(ch.buffer), nm);
+    off += 30 + nm.length + data.length;
+    cdSize += 46 + nm.length;
+  });
+  const e = new DataView(new ArrayBuffer(22));
+  e.setUint32(0, 0x06054b50, true);
+  e.setUint16(8, files.length, true); e.setUint16(10, files.length, true);
+  e.setUint32(12, cdSize, true); e.setUint32(16, off, true);
+  return new Blob(parts.concat(central, [new Uint8Array(e.buffer)]),
+    {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+}
+function xmlEsc(s){
+  return String(s == null ? '' : s).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+function buildXlsx(header, rows, widths){
+  const X = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n';
+  const col = function(c){ return String.fromCharCode(65 + c); };
+  const cell = function(v, r, c, s){
+    return '<c r="' + col(c) + r + '" t="inlineStr" s="' + s + '"><is><t xml:space="preserve">' + xmlEsc(v) + '</t></is></c>';
+  };
+  let sheet = X + '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' +
+    '<sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>' +
+    '<cols>' + widths.map(function(w, i){ return '<col min="' + (i + 1) + '" max="' + (i + 1) + '" width="' + w + '" customWidth="1"/>'; }).join('') + '</cols>' +
+    '<sheetData><row r="1">' + header.map(function(h, c){ return cell(h, 1, c, 1); }).join('') + '</row>';
+  rows.forEach(function(r, i){
+    sheet += '<row r="' + (i + 2) + '">' + r.map(function(v, c){ return cell(v, i + 2, c, 2); }).join('') + '</row>';
+  });
+  sheet += '</sheetData></worksheet>';
+  const styles = X + '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' +
+    '<fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Calibri"/></font></fonts>' +
+    '<fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF005993"/><bgColor indexed="64"/></patternFill></fill></fills>' +
+    '<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>' +
+    '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>' +
+    '<cellXfs count="3"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>' +
+    '<xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/>' +
+    '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0" applyAlignment="1"><alignment vertical="top" wrapText="1"/></xf></cellXfs>' +
+    '<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>';
+  return zipStore([
+    {name: '[Content_Types].xml', text: X + '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' +
+      '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' +
+      '<Default Extension="xml" ContentType="application/xml"/>' +
+      '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>' +
+      '<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>' +
+      '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>'},
+    {name: '_rels/.rels', text: X + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+      '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>'},
+    {name: 'xl/workbook.xml', text: X + '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">' +
+      '<bookViews><workbookView/></bookViews><sheets><sheet name="Ap-Khom" sheetId="1" r:id="rId1"/></sheets></workbook>'},
+    {name: 'xl/_rels/workbook.xml.rels', text: X + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+      '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>' +
+      '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>'},
+    {name: 'xl/styles.xml', text: styles},
+    {name: 'xl/worksheets/sheet1.xml', text: sheet}
+  ]);
+}
+const XLSX_HEADER = ['Xã/Phường', 'Tên cũ', 'Tên mới', 'Ghi chú', 'Số liệu', 'Tên hiện hành (tự tính, không cần nhập)'];
+function exportExcel(){
+  const list = lastShown.length ? lastShown : ITEMS;
+  const rows = list.map(function(it){
+    const d = it.d;
+    return [d.region, d.old || '', d.new, d.note || '', d.stat || '', currentText(it) || d.new];
+  });
+  downloadBlob(buildXlsx(XLSX_HEADER, rows, [34, 46, 26, 46, 34, 30]), 'tra-cuu-ap-khom_' + dateStamp() + '.xlsx');
+  toast('Đã xuất ' + rows.length + ' dòng ra Excel.');
+}
+
+/* ---------- Nhập Excel (.xlsx) / CSV ---------- */
+async function unzip(buf){
+  const u8 = new Uint8Array(buf), dv = new DataView(buf);
+  let e = -1;
+  for(let i = u8.length - 22; i >= Math.max(0, u8.length - 66000); i--){
+    if(dv.getUint32(i, true) === 0x06054b50){ e = i; break; }
+  }
+  if(e < 0) throw new Error('NOT_ZIP');
+  const n = dv.getUint16(e + 10, true);
+  let p = dv.getUint32(e + 16, true);
+  const dec = new TextDecoder('utf-8');
+  const entries = {};
+  for(let k = 0; k < n; k++){
+    if(dv.getUint32(p, true) !== 0x02014b50) break;
+    const nlen = dv.getUint16(p + 28, true), xlen = dv.getUint16(p + 30, true), clen = dv.getUint16(p + 32, true);
+    entries[dec.decode(u8.subarray(p + 46, p + 46 + nlen))] =
+      {method: dv.getUint16(p + 10, true), csize: dv.getUint32(p + 20, true), lo: dv.getUint32(p + 42, true)};
+    p += 46 + nlen + xlen + clen;
+  }
+  return {
+    names: Object.keys(entries),
+    text: async function(name){
+      const f = entries[name];
+      if(!f) return null;
+      const start = f.lo + 30 + dv.getUint16(f.lo + 26, true) + dv.getUint16(f.lo + 28, true);
+      const raw = u8.subarray(start, start + f.csize);
+      if(f.method === 0) return dec.decode(raw);
+      if(f.method !== 8) throw new Error('BAD_ZIP');
+      if(typeof DecompressionStream === 'undefined') throw new Error('NO_INFLATE');
+      const ab = await new Response(new Blob([raw]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer();
+      return dec.decode(ab);
+    }
+  };
+}
+function tags(node, name){ return Array.from(node.getElementsByTagNameNS('*', name)); }
+async function readXlsx(buf){
+  const zip = await unzip(buf);
+  const parse = function(s){ return new DOMParser().parseFromString(s, 'application/xml'); };
+  let sheetPath = null;
+  const wb = await zip.text('xl/workbook.xml'), rels = await zip.text('xl/_rels/workbook.xml.rels');
+  if(wb && rels){
+    const first = tags(parse(wb), 'sheet')[0];
+    const rid = first && (first.getAttribute('r:id') || first.getAttributeNS('http://schemas.openxmlformats.org/officeDocument/2006/relationships', 'id'));
+    tags(parse(rels), 'Relationship').forEach(function(r){
+      if(r.getAttribute('Id') === rid){
+        const t = r.getAttribute('Target') || '';
+        sheetPath = t.charAt(0) === '/' ? t.slice(1) : 'xl/' + t;
+      }
+    });
+  }
+  if(!sheetPath || zip.names.indexOf(sheetPath) < 0){
+    sheetPath = zip.names.filter(function(n){ return /^xl\/worksheets\/[^\/]+\.xml$/.test(n); }).sort()[0];
+  }
+  if(!sheetPath) throw new Error('NO_SHEET');
+  const shared = [];
+  const sst = await zip.text('xl/sharedStrings.xml');
+  if(sst){
+    tags(parse(sst), 'si').forEach(function(si){
+      shared.push(tags(si, 't').filter(function(t){ return t.parentNode.localName !== 'rPh'; })
+        .map(function(t){ return t.textContent; }).join(''));
+    });
+  }
+  const matrix = [];
+  tags(parse(await zip.text(sheetPath)), 'row').forEach(function(row){
+    const out = [];
+    let seq = 0;
+    tags(row, 'c').forEach(function(c){
+      const ref = c.getAttribute('r');
+      let ci = seq;
+      if(ref){
+        ci = 0;
+        const L = /^[A-Z]+/i.exec(ref)[0].toUpperCase();
+        for(let k = 0; k < L.length; k++) ci = ci * 26 + (L.charCodeAt(k) - 64);
+        ci -= 1;
+      }
+      seq = ci + 1;
+      const t = c.getAttribute('t');
+      let v = '';
+      if(t === 'inlineStr'){
+        v = tags(c, 't').map(function(x){ return x.textContent; }).join('');
+      }else{
+        const vn = tags(c, 'v')[0];
+        v = vn ? vn.textContent : '';
+        if(t === 's') v = shared[+v] || '';
+      }
+      out[ci] = v;
+    });
+    matrix.push(Array.from(out, function(x){ return x == null ? '' : String(x); }));
+  });
+  return matrix;
+}
+function readCsv(text){
+  text = text.replace(/^﻿/, '');
+  const firstLine = text.split(/\r?\n/)[0] || '';
+  const delim = ['\t', ';', ','].sort(function(a, b){ return firstLine.split(b).length - firstLine.split(a).length; })[0];
+  const rows = [];
+  let row = [], cur = '', inQ = false;
+  for(let i = 0; i < text.length; i++){
+    const ch = text[i];
+    if(inQ){
+      if(ch === '"'){ if(text[i + 1] === '"'){ cur += '"'; i++; } else inQ = false; }
+      else cur += ch;
+    }else if(ch === '"'){ inQ = true; }
+    else if(ch === delim){ row.push(cur); cur = ''; }
+    else if(ch === '\n' || ch === '\r'){
+      if(ch === '\r' && text[i + 1] === '\n') i++;
+      row.push(cur); cur = ''; rows.push(row); row = [];
+    }else cur += ch;
+  }
+  if(cur !== '' || row.length){ row.push(cur); rows.push(row); }
+  return rows;
+}
+function headerMap(row){
+  const map = {};
+  row.forEach(function(cellText, c){
+    const t = toks(cellText);
+    const has = function(){ return Array.prototype.every.call(arguments, function(x){ return t.indexOf(x) >= 0; }); };
+    let key = null;
+    if(has('hien', 'hanh')) key = null;
+    else if(has('xa') || has('phuong') || has('region') || has('dia', 'ban') || has('don', 'vi')) key = 'region';
+    else if(has('cu') || has('old')) key = 'old';
+    else if(has('moi') || has('new')) key = 'new';
+    else if(has('ghi', 'chu') || has('note')) key = 'note';
+    else if(has('so', 'lieu') || has('stat')) key = 'stat';
+    if(key && map[key] === undefined) map[key] = c;
+  });
+  return map;
+}
+function matrixToRows(matrix){
+  let hi = -1, map = null;
+  for(let r = 0; r < Math.min(matrix.length, 15); r++){
+    const m = headerMap(matrix[r]);
+    if(m.region !== undefined && m.new !== undefined){ hi = r; map = m; break; }
+  }
+  if(hi < 0) throw new Error('NO_HEADER');
+  const rows = [];
+  let skipped = 0, lastRegion = '';
+  for(let r = hi + 1; r < matrix.length; r++){
+    const line = matrix[r];
+    if(!line.some(function(x){ return String(x || '').trim(); })) continue;
+    const d = {};
+    FIELDS.forEach(function(k){ if(map[k] !== undefined) d[k] = line[map[k]]; });
+    const row = cleanRow(d);
+    if(!row.region && lastRegion) row.region = lastRegion;   // ô gộp: dùng lại xã/phường của dòng trên
+    if(!row.region || !row.new){ skipped++; continue; }
+    lastRegion = row.region;
+    rows.push({region: row.region, old: row.old || '', new: row.new, note: row.note, stat: row.stat});
+  }
+  return {rows: rows.map(cleanRow), skipped: skipped};
+}
+async function importFile(file){
+  try{
+    const buf = await file.arrayBuffer();
+    const head = new Uint8Array(buf.slice(0, 2));
+    const isZip = head[0] === 0x50 && head[1] === 0x4B;
+    const matrix = isZip ? await readXlsx(buf) : readCsv(new TextDecoder('utf-8').decode(buf));
+    const res = matrixToRows(matrix);
+    if(!res.rows.length){ toast('File không có dòng dữ liệu hợp lệ nào.'); return; }
+    override = {sig: SIG, at: Date.now(), name: file.name, rows: res.rows};
+    overrideSaved = lsSet(OVERRIDE_KEY, JSON.stringify(override));
+    query = ''; $('searchInput').value = ''; activeRegion = null;
+    setData(res.rows);
+    renderAll();
+    toast('Đã nhập ' + res.rows.length + ' dòng' + (res.skipped ? ' (bỏ qua ' + res.skipped + ' dòng thiếu xã/phường hoặc tên mới)' : '') + '.');
+  }catch(err){
+    const code = err && err.message;
+    if(code === 'NO_HEADER') toast('Không tìm thấy dòng tiêu đề có cột “Xã/Phường” và “Tên mới”. Hãy dùng file mẫu từ nút “Xuất Excel”.');
+    else if(code === 'NO_INFLATE') toast('Trình duyệt này chưa đọc được .xlsx. Hãy lưu file dạng “CSV UTF-8” rồi nhập lại.');
+    else toast('Không đọc được file. Hãy dùng .xlsx hoặc CSV UTF-8 theo mẫu từ nút “Xuất Excel”.');
+  }
+}
+function restoreData(){
+  lsDel(OVERRIDE_KEY);
+  override = null; overrideSaved = true;
+  setData(EMBEDDED);
+  renderAll();
+  toast('Đã khôi phục dữ liệu gốc của file.');
+}
+
+/* ---------- Tải bản HTML đã chứa dữ liệu đang dùng ---------- */
+function exportHtml(){
+  const rows = ITEMS.map(function(it){ return it.d; });
+  const clone = document.documentElement.cloneNode(true);
+  const q = function(sel){ return clone.querySelector(sel); };
+  q('#appData').textContent = '\n/* DỮ LIỆU — cập nhật ' + new Date().toLocaleString('vi-VN') + ' — mỗi dòng là một bản ghi: region, old, new, note, stat */\nconst DATA = [\n' +
+    rows.map(function(r){ return '  ' + JSON.stringify(r).replace(/</g, '\\u003c'); }).join(',\n') + '\n];\n';
+  ['#statRow', '#filterRow', '#results', '#locaChatMessages', '#toast', '#dataBanner', '#searchHint', '#themeToggle', '#deviceToggle', '#regionLine'].forEach(function(s){
+    const n = q(s); if(n) n.innerHTML = '';
+  });
+  q('#resultCount').textContent = '0';
+  q('#dataBanner').setAttribute('hidden', '');
+  q('#searchHint').setAttribute('hidden', '');
+  q('#toast').className = 'toast';
+  q('#searchClear').className = 'search-clear';
+  q('#appFrame').removeAttribute('class');
+  q('#locaChatPanel').className = 'loca-chat-panel';
+  q('#locaChatBadge').removeAttribute('style');
+  q('body').removeAttribute('class');
+  clone.removeAttribute('data-theme');
+  clone.querySelectorAll('img.js-logo').forEach(function(im){ im.removeAttribute('src'); });
+  const html = '<!DOCTYPE html>\n' + clone.outerHTML + '\n';
+  downloadBlob(new Blob([html], {type: 'text/html;charset=utf-8'}), 'tra-cuu-ap-khom-2026_v' + APP_VERSION + '_' + dateStamp() + '.html');
+  toast('Đã tạo file HTML chứa ' + rows.length + ' dòng dữ liệu đang dùng.');
+}
+
+/* ---------- Giao diện sáng/tối + xem dạng di động ---------- */
+function sunIcon(){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><line x1="12" y1="2" x2="12" y2="4"></line><line x1="12" y1="20" x2="12" y2="22"></line><line x1="4.2" y1="4.2" x2="5.6" y2="5.6"></line><line x1="18.4" y1="18.4" x2="19.8" y2="19.8"></line><line x1="2" y1="12" x2="4" y2="12"></line><line x1="20" y1="12" x2="22" y2="12"></line><line x1="4.2" y1="19.8" x2="5.6" y2="18.4"></line><line x1="18.4" y1="5.6" x2="19.8" y2="4.2"></line></svg>';}
+function moonIcon(){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg>';}
+function desktopIcon(){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="1.5"></rect><line x1="8" y1="20" x2="16" y2="20"></line><line x1="12" y1="16" x2="12" y2="20"></line></svg>';}
+function mobileIcon(){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2.5"></rect><line x1="10.5" y1="19" x2="13.5" y2="19"></line></svg>';}
+
+const THEME_KEY = 'locamind.theme';
+let isDark = (function(){
+  const saved = lsGet(THEME_KEY);
+  if(saved === 'dark' || saved === 'light') return saved === 'dark';
+  return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+})();
+let isMobilePreview = false;
+function applyTheme(){
+  document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  $('themeToggle').innerHTML = isDark ? sunIcon() : moonIcon();
+}
+function applyDevice(){
+  $('appFrame').classList.toggle('device-mobile', isMobilePreview);
+  document.body.classList.toggle('device-mobile-active', isMobilePreview);
+  $('deviceToggle').innerHTML = isMobilePreview ? desktopIcon() : mobileIcon();
+}
+
+/* ---------- Gắn sự kiện ---------- */
+$('themeToggle').addEventListener('click', function(){ isDark = !isDark; lsSet(THEME_KEY, isDark ? 'dark' : 'light'); applyTheme(); });
+$('deviceToggle').addEventListener('click', function(){ isMobilePreview = !isMobilePreview; applyDevice(); });
+$('searchInput').addEventListener('input', function(e){ query = e.target.value; renderResults(); });
+function clearSearch(){
+  query = ''; $('searchInput').value = '';
+  renderResults();
+  $('searchInput').focus();
+}
+$('searchClear').addEventListener('click', clearSearch);
+$('filterRow').addEventListener('click', function(e){
+  const btn = e.target.closest('.chip');
+  if(!btn) return;
+  const i = +btn.dataset.i;
+  activeRegion = i < 0 ? null : REGIONS[i];
+  renderFilters();
+  renderResults();
+});
+$('results').addEventListener('click', function(e){
+  const btn = e.target.closest('.copy-btn');
+  if(!btn) return;
+  const it = ITEMS[+btn.dataset.i];
+  if(it) copyText(lineText(it));
+});
+$('dataBanner').addEventListener('click', function(e){ if(e.target.id === 'btnRestore') restoreData(); });
+$('btnPrint').addEventListener('click', function(){ window.print(); });
+$('btnExport').addEventListener('click', exportExcel);
+$('btnImport').addEventListener('click', function(){ $('fileInput').click(); });
+$('fileInput').addEventListener('change', function(e){
+  const f = e.target.files && e.target.files[0];
+  e.target.value = '';
+  if(f) importFile(f);
+});
+$('btnHtml').addEventListener('click', exportHtml);
+
+applyTheme();
+applyDevice();
+setData(override ? override.rows : EMBEDDED);
+renderAll();
+
+/* ---------- LocaMind: trợ lý tra cứu nhanh (chat popup) ---------- */
+(function(){
+  const panel = $('locaChatPanel');
+  const toggleBtn = $('locaChatToggle');
+  const badge = $('locaChatBadge');
+  const messages = $('locaChatMessages');
+  const input = $('locaChatInput');
+  let greeted = false;
+
+  function addMsg(html, who){
+    const div = document.createElement('div');
+    div.className = 'loca-msg ' + who;
+    div.innerHTML = html;      // mọi nội dung người dùng/dữ liệu đều đã qua esc()
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
+  }
+  function openPanel(){
+    panel.classList.add('open');
+    badge.style.display = 'none';
+    if(!greeted){
+      greeted = true;
+      addMsg('Chào bạn 👋 Mình là <b>LocaMind</b>. Bạn cần tra cứu khóm/ấp nào trên địa bàn tỉnh Bạc Liêu (cũ)? Gõ tên ấp/khóm kèm xã/phường, ví dụ: <b>ấp 3 Gành Hào</b> hoặc <b>khóm 3 phường 7</b>.', 'bot');
+    }
+    setTimeout(function(){ input.focus(); }, 50);
+  }
+  function closePanel(){ panel.classList.remove('open'); }
+  window.locaChatIsOpen = function(){ return panel.classList.contains('open'); };
+  window.locaChatClose = closePanel;
+
+  toggleBtn.addEventListener('click', function(){ if(panel.classList.contains('open')) closePanel(); else openPanel(); });
+  $('locaChatClose').addEventListener('click', closePanel);
+
+  $('locaChatForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    const text = input.value.trim();
+    if(!text) return;
+    addMsg(esc(text), 'user');
+    input.value = '';
+
+    const res = smartSearch(text, ITEMS);
+    if(!res.q.length || !res.items.length){
+      addMsg('Mình chưa tìm thấy ấp/khóm nào khớp với “<b>' + esc(text) + '</b>”. Bạn thử gõ tên ấp/khóm kèm tên xã/phường, hoặc dùng ô tìm kiếm chính phía trên để xem toàn bộ danh sách nhé.', 'bot');
+      return;
+    }
+    const MAX = 6;
+    const lines = res.items.slice(0, MAX).map(function(it){
+      const d = it.d;
+      let s = '• ' + (d.old ? esc(d.old) + ' → ' : '') + '<b>' + esc(d.new) + '</b> (' + esc(d.region) + ')';
+      const cur = currentText(it);
+      if(cur) s += ' → hiện nay: <b>' + esc(cur) + '</b>';
+      else if(it.hasLater) s += ' — chưa có dữ liệu giai đoạn sau';
+      if(d.note) s += ' — ' + esc(d.note);
+      return s;
+    });
+    let reply = 'Tìm thấy ' + res.items.length + ' kết quả:<br>' + lines.join('<br>');
+    if(res.items.length > MAX) reply += '<br>… và ' + (res.items.length - MAX) + ' kết quả khác. Hãy gõ thêm tên xã/phường để thu hẹp.';
+    if(res.dropped.length) reply += '<br><i>(Đã bỏ qua các từ: ' + res.dropped.map(esc).join(', ') + ')</i>';
+    addMsg(reply, 'bot');
+  });
+})();
+
+document.addEventListener('keydown', function(e){
+  if(e.key !== 'Escape') return;
+  if(window.locaChatIsOpen()) window.locaChatClose();
+  else if(query) clearSearch();
+});
+</script>
+</body>
+</html>
